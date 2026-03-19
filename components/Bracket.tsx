@@ -33,7 +33,7 @@ const FF_GAMES = [
   { teamA: 'Texas',        seedA: 11, scoreA: 68,    teamB: 'NC State',   seedB: 11, scoreB: 66  },
 ] as const;
 
-const FF_WINNERS = ['Howard', 'SMU', 'Lehigh', 'Texas'] as const;
+const FF_WINNERS = ['Howard', 'SMU', 'Prairie View', 'Texas'] as const;
 
 function FFResultCard({ game, winner }: {
   game: typeof FF_GAMES[number];
