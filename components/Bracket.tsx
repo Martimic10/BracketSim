@@ -28,8 +28,8 @@ const rightX  = centerX + CENTER_W + REGION_COL_GAP;
 
 const FF_GAMES = [
   { teamA: 'UMBC',         seedA: 16, scoreA: 83,   teamB: 'Howard',     seedB: 16, scoreB: 86  },
-  { teamA: 'Miami OH',     seedA: 11, scoreA: null,  teamB: 'SMU',        seedB: 11, scoreB: null },
-  { teamA: 'Prairie View', seedA: 16, scoreA: null,  teamB: 'Lehigh',     seedB: 16, scoreB: null },
+  { teamA: 'Miami OH',     seedA: 11, scoreA: 89,    teamB: 'SMU',        seedB: 11, scoreB: 79   },
+  { teamA: 'Prairie View', seedA: 16, scoreA: 67,    teamB: 'Lehigh',     seedB: 16, scoreB: 55   },
   { teamA: 'Texas',        seedA: 11, scoreA: 68,    teamB: 'NC State',   seedB: 11, scoreB: 66  },
 ] as const;
 
