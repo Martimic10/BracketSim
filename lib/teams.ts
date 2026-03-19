@@ -4,10 +4,10 @@ import { Team, Region } from './types';
 // KenPom stats are estimated pre-tournament ratings for 2025-26 season
 // ESPN IDs for logo CDN: https://a.espncdn.com/i/teamlogos/ncaa/500/{id}.png
 // First Four results (March 17-18, 2026):
-//   Howard beat UMBC 86-83   → Midwest 16-seed
-//   SMU beat Miami (OH)       → Midwest 11-seed
-//   Lehigh beat Prairie View  → South 16-seed
-//   Texas beat NC State 68-66 → West 11-seed
+//   Howard beat UMBC 86-83        → Midwest 16-seed
+//   Miami OH beat SMU 89-79       → Midwest 11-seed
+//   Prairie View beat Lehigh 67-55 → South 16-seed
+//   Texas beat NC State 68-66     → West 11-seed
 
 type TeamDef = Omit<Team, 'id' | 'region'>;
 
@@ -29,7 +29,7 @@ const TEAMS: Record<Region, TeamDef[]> = {
     { seed: 13, name: 'Troy',            shortName: 'Troy',        conference: 'Sun Belt',  record: '23-12', espnId: 2653, kenpom: { rank: 145, adjEM: 2.2,  adjO: 104.5, adjOrank: 182, adjD: 102.3, adjDrank: 142, tempo: 68.5, sosEM: -3.2 } },
     { seed: 14, name: 'Penn',            shortName: 'Penn',        conference: 'Ivy',       record: '20-9',  espnId: 219,  kenpom: { rank: 168, adjEM: 0.5,  adjO: 102.8, adjOrank: 205, adjD: 102.3, adjDrank: 140, tempo: 64.2, sosEM: -0.5 } },
     { seed: 15, name: 'Idaho',           shortName: 'Idaho',       conference: 'Big Sky',   record: '22-11', espnId: 70,   kenpom: { rank: 205, adjEM: -2.5, adjO: 99.8,  adjOrank: 228, adjD: 102.3, adjDrank: 140, tempo: 68.8, sosEM: -4.5 } },
-    { seed: 16, name: 'Lehigh',          shortName: 'Lehigh',      conference: 'Patriot',   record: '21-13', espnId: 2329, kenpom: { rank: 238, adjEM: -5.5, adjO: 97.2,  adjOrank: 265, adjD: 102.7, adjDrank: 158, tempo: 71.5, sosEM: -7.2 } },
+    { seed: 16, name: 'Prairie View',     shortName: 'Prairie View', conference: 'SWAC',      record: '17-17', espnId: 2504, kenpom: { rank: 238, adjEM: -5.5, adjO: 97.2,  adjOrank: 265, adjD: 102.7, adjDrank: 158, tempo: 71.5, sosEM: -7.2 } },
   ],
 
   // ─── WEST (Arizona #1) ───────────────────────────────────────────────────
@@ -84,7 +84,7 @@ const TEAMS: Record<Region, TeamDef[]> = {
     { seed: 8,  name: 'Georgia',         shortName: 'Georgia',     conference: 'SEC',       record: '20-13', espnId: 61,   kenpom: { rank: 62,  adjEM: 12.8, adjO: 112.8, adjOrank: 68,  adjD: 100.0, adjDrank: 78, tempo: 68.5, sosEM: 12.2 } },
     { seed: 9,  name: 'Saint Louis',     shortName: 'Saint Louis', conference: 'A-10',      record: '22-11', espnId: 139,  kenpom: { rank: 75,  adjEM: 10.5, adjO: 111.5, adjOrank: 85,  adjD: 101.0, adjDrank: 88, tempo: 68.2, sosEM: 5.8  } },
     { seed: 10, name: 'Santa Clara',     shortName: 'Santa Clara', conference: 'WCC',       record: '23-8',  espnId: 2541, kenpom: { rank: 85,  adjEM: 9.0,  adjO: 110.8, adjOrank: 95,  adjD: 101.8, adjDrank: 118, tempo: 66.5, sosEM: 4.5  } },
-    { seed: 11, name: 'SMU',             shortName: 'SMU',         conference: 'ACC',       record: '21-13', espnId: 2567, kenpom: { rank: 95,  adjEM: 7.5,  adjO: 110.2, adjOrank: 100, adjD: 102.7, adjDrank: 158, tempo: 70.2, sosEM: 11.5 } },
+    { seed: 11, name: 'Miami OH',         shortName: 'Miami OH',    conference: 'MAC',       record: '21-13', espnId: 193,  kenpom: { rank: 95,  adjEM: 7.5,  adjO: 110.2, adjOrank: 100, adjD: 102.7, adjDrank: 158, tempo: 70.2, sosEM: 11.5 } },
     { seed: 12, name: 'Akron',           shortName: 'Akron',       conference: 'MAC',       record: '25-8',  espnId: 2006, kenpom: { rank: 118, adjEM: 4.8,  adjO: 107.5, adjOrank: 128, adjD: 102.7, adjDrank: 158, tempo: 64.8, sosEM: 1.8  } },
     { seed: 13, name: 'Hofstra',         shortName: 'Hofstra',     conference: 'CAA',       record: '24-9',  espnId: 2275, kenpom: { rank: 152, adjEM: 1.5,  adjO: 103.8, adjOrank: 192, adjD: 102.3, adjDrank: 140, tempo: 68.2, sosEM: -2.5 } },
     { seed: 14, name: 'Wright State',    shortName: 'Wright St',   conference: 'Horizon',   record: '23-10', espnId: 2750, kenpom: { rank: 175, adjEM: -0.5, adjO: 102.0, adjOrank: 222, adjD: 102.5, adjDrank: 148, tempo: 68.8, sosEM: -3.8 } },
