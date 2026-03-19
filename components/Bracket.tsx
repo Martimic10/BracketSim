@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { BracketState, Matchup } from '@/lib/types';
-import { initializeBracket, runFullSimulation } from '@/lib/simulation';
+import { initializeBracket, runFullSimulation, applyRealResults } from '@/lib/simulation';
 import { runAISimulation } from '@/lib/ai-simulation';
 import RegionBracket, { CARD_H, CARD_W, REGION_TOTAL_H, REGION_TOTAL_W, ROUND_GAP, REGION_LABEL_H } from './RegionBracket';
 import CenterBracket, { CENTER_W } from './CenterBracket';
@@ -33,7 +33,7 @@ const FF_GAMES = [
   { teamA: 'Texas',        seedA: 11, scoreA: 68,    teamB: 'NC State',   seedB: 11, scoreB: 66  },
 ] as const;
 
-const FF_WINNERS = ['Howard', 'SMU', 'Prairie View', 'Texas'] as const;
+const FF_WINNERS = ['Howard', 'Miami OH', 'Prairie View', 'Texas'] as const;
 
 function FFResultCard({ game, winner }: {
   game: typeof FF_GAMES[number];
@@ -80,6 +80,22 @@ export default function Bracket() {
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Poll ESPN for completed tournament games every 60 seconds
+  useEffect(() => {
+    const sync = async () => {
+      try {
+        const res = await fetch('/api/live-results');
+        const data = await res.json();
+        if (data.results?.length) {
+          setState(s => applyRealResults(s, data.results));
+        }
+      } catch { /* silent fail */ }
+    };
+    sync();
+    const id = setInterval(sync, 60_000);
+    return () => clearInterval(id);
   }, []);
 
   const handleRun = useCallback(async () => {

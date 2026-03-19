@@ -1,5 +1,6 @@
 import { Team, Matchup, BracketState, Region } from './types';
 import { generateTeams, SEED_ORDER } from './teams';
+import type { GameResult } from '@/app/api/live-results/route';
 
 /**
  * KenPom-based win probability using logistic regression on AdjEM difference.
@@ -159,4 +160,110 @@ export function runFullSimulation(state: BracketState): SimulationStep[] {
   });
 
   return steps;
+}
+
+// ─── Live results ────────────────────────────────────────────────────────────
+
+function normName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function namesMatch(a: string, b: string): boolean {
+  const na = normName(a);
+  const nb = normName(b);
+  return na === nb || na.includes(nb) || nb.includes(na);
+}
+
+function findResult(teamA: Team, teamB: Team, results: GameResult[]): GameResult | undefined {
+  return results.find(r =>
+    (namesMatch(teamA.name, r.teamA) && namesMatch(teamB.name, r.teamB)) ||
+    (namesMatch(teamA.name, r.teamB) && namesMatch(teamB.name, r.teamA))
+  );
+}
+
+function realWinner(matchup: Matchup, result: GameResult): Team | null {
+  if (!matchup.teamA || !matchup.teamB) return null;
+  if (namesMatch(matchup.teamA.name, result.winner)) return matchup.teamA;
+  if (namesMatch(matchup.teamB.name, result.winner)) return matchup.teamB;
+  return null;
+}
+
+/**
+ * Applies completed real-world game results to the bracket state.
+ * Only fills in matchups that have both teams set but no winner yet.
+ * Propagates winners to the next round so later matchups get populated.
+ */
+export function applyRealResults(state: BracketState, results: GameResult[]): BracketState {
+  if (!results.length) return state;
+
+  const matchups = cloneMatchups(state.matchups);
+  const ff = state.finalFour.map(m => ({ ...m }));
+  const champ = { ...state.championship! };
+  const regions: Region[] = ['EAST', 'WEST', 'SOUTH', 'MIDWEST'];
+
+  for (let round = 1; round <= 4; round++) {
+    for (const region of regions) {
+      const count = Math.pow(2, 4 - round);
+      for (let i = 0; i < count; i++) {
+        const id = `${region}-R${round}-${i}`;
+        const m = matchups[id];
+        if (!m.teamA || !m.teamB || m.winner) continue;
+
+        const result = findResult(m.teamA, m.teamB, results);
+        if (!result) continue;
+
+        const winner = realWinner(m, result);
+        if (!winner) continue;
+
+        matchups[id] = { ...m, winner };
+
+        if (round < 4) {
+          const nextId = `${region}-R${round + 1}-${Math.floor(i / 2)}`;
+          const slot = i % 2 === 0 ? 'teamA' : 'teamB';
+          matchups[nextId] = { ...matchups[nextId], [slot]: winner };
+        } else {
+          // Elite Eight winner → Final Four
+          if (region === 'SOUTH') ff[0] = { ...ff[0], teamA: winner };
+          else if (region === 'WEST') ff[0] = { ...ff[0], teamB: winner };
+          else if (region === 'EAST') ff[1] = { ...ff[1], teamA: winner };
+          else if (region === 'MIDWEST') ff[1] = { ...ff[1], teamB: winner };
+        }
+      }
+    }
+  }
+
+  // Update win probabilities for newly populated matchups
+  for (const id of Object.keys(matchups)) {
+    const m = matchups[id];
+    if (m.teamA && m.teamB && !m.winner) matchups[id] = updateProbs(m);
+  }
+
+  // Final Four
+  for (let i = 0; i < 2; i++) {
+    if (!ff[i].teamA || !ff[i].teamB || ff[i].winner) continue;
+    const result = findResult(ff[i].teamA!, ff[i].teamB!, results);
+    if (!result) continue;
+    const winner = realWinner(ff[i], result);
+    if (!winner) continue;
+    ff[i] = { ...ff[i], winner };
+    if (i === 0) champ.teamA = winner;
+    else champ.teamB = winner;
+  }
+
+  // Championship
+  if (champ.teamA && champ.teamB && !champ.winner) {
+    const result = findResult(champ.teamA, champ.teamB, results);
+    if (result) {
+      const winner = realWinner(champ, result);
+      if (winner) champ.winner = winner;
+    }
+  }
+
+  return {
+    ...state,
+    matchups,
+    finalFour: ff,
+    championship: champ,
+    champion: champ.winner ?? state.champion,
+  };
 }
